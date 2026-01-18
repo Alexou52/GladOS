@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLaDOS Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-yellow: #d29922;
+            --accent-green: #3fb950;
+            --accent-blue: #58a6ff;
+            --boa-gradient: linear-gradient(135deg, #d29922 0%, #3fb950 50%, #58a6ff 100%);
+            --success: #3fb950;
+            --error: #f85149;
+            --border: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-logo .boa-icon { font-size: 1.8rem; }
+        .nav-logo .logo-text {
+            background: var(--boa-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        /* Docs Layout */
+        .docs-container {
+            display: flex;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .docs-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 70px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .docs-nav ul {
+            list-style: none;
+        }
+
+        .docs-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .docs-nav-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .docs-nav-link.active {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--accent-green);
+        }
+
+        .docs-nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .quick-links {
+            list-style: none;
+        }
+
+        .quick-links a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .quick-links a:hover {
+            color: var(--accent-green);
+        }
+
+        /* Main Content */
+        .docs-main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 3rem;
+            max-width: 1200px;
+        }
+
+        .docs-content {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        /* Markdown Styling */
+        .docs-content h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .docs-content h2 {
+            font-size: 1.6rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-green);
+        }
+
+        .docs-content h3 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .docs-content p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .docs-content code {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent-green);
+        }
+
+        .docs-content pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .docs-content pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Syntax highlighting classes */
+        .hl-keyword { color: #ff7b72; }
+        .hl-function { color: #d2a8ff; }
+        .hl-string { color: #a5d6ff; }
+        .hl-number { color: #79c0ff; }
+        .hl-comment { color: #8b949e; }
+        .hl-operator { color: #ff7b72; }
+
+        .docs-content ul, .docs-content ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .docs-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .docs-content th, .docs-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .docs-content th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+        }
+
+        .docs-content td {
+            color: var(--text-secondary);
+        }
+
+        .docs-content blockquote {
+            border-left: 4px solid var(--accent-green);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .docs-content a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .docs-content a:hover {
+            text-decoration: underline;
+        }
+
+        .docs-content strong {
+            color: var(--text-primary);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            margin-left: 280px;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .docs-sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+            .docs-main, .footer {
+                margin-left: 0;
+            }
+            .docs-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-dragon boa-icon"></i>
+                <span class="logo-text">GLaDOS</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="docs.html" class="nav-link active">Documentation</a></li>
+                <li><a href="playground.html" class="nav-link">Playground</a></li>
+                <li><a href="https://github.com" class="nav-link"><i class="fab fa-github"></i> GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="docs-container">
+        <aside class="docs-sidebar">
+            <div class="sidebar-title">Documentation</div>
+            <nav class="docs-nav">
+                <ul>
+                    <li>
+                        <a href="?page=introduction" class="docs-nav-link" data-page="introduction">
+                            <i class="fas fa-book-open"></i> Introduction
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=syntax" class="docs-nav-link" data-page="syntax">
+                            <i class="fas fa-code"></i> Syntax Guide
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=builtins" class="docs-nav-link" data-page="builtins">
+                            <i class="fas fa-tools"></i> Built-in Functions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=examples" class="docs-nav-link" data-page="examples">
+                            <i class="fas fa-lightbulb"></i> Examples
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page=etude_technique" class="docs-nav-link" data-page="etude_technique">
+                            <i class="fas fa-file-alt"></i> Étude Technique
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Quick Links</div>
+                <ul class="quick-links">
+                    <li><a href="playground.html"><i class="fas fa-play-circle"></i> Try Playground</a></li>
+                    <li><a href="https://github.com"><i class="fab fa-github"></i> GitHub</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="docs-main">
+            <div class="docs-content" id="docs-content">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading documentation...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p><i class="fas fa-dragon"></i> GLaDOS © 2026. Built with <i class="fas fa-heart" style="color: #f85149;"></i> and Haskell.</p>
+    </footer>
+
+    <script>
+        // Get page from URL
+        function getPage() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('page') || 'introduction';
+        }
+
+        // Load markdown content
+        async function loadContent(page) {
+            const container = document.getElementById('docs-content');
+            
+            try {
+                const response = await fetch(`documentation/${page}.md`);
+                if (!response.ok) throw new Error('Page not found');
+                
+                const markdown = await response.text();
+                container.innerHTML = marked.parse(markdown);
+                
+                // Highlight active nav link
+                document.querySelectorAll('.docs-nav-link').forEach(link => {
+                    link.classList.toggle('active', link.dataset.page === page);
+                });
+                
+                // Syntax highlight code blocks with 'boa' language
+                container.querySelectorAll('pre code').forEach(block => {
+                    highlightBoa(block);
+                });
+                
+            } catch (err) {
+                container.innerHTML = `
+                    <h1>Page Not Found</h1>
+                    <p>The requested documentation page could not be found.</p>
+                    <p><a href="?page=introduction">Go to Introduction</a></p>
+                `;
+            }
+        }
+
+        // Simple Boa syntax highlighting - order matters to avoid conflicts
+        function highlightBoa(block) {
+            let code = block.textContent;
+            let result = [];
+            let i = 0;
+            
+            while (i < code.length) {
+                // Comments first (take the whole line)
+                if (code[i] === '#') {
+                    let end = code.indexOf('\n', i);
+                    if (end === -1) end = code.length;
+                    result.push('<span class="hl-comment">' + escapeHtml(code.slice(i, end)) + '</span>');
+                    i = end;
+                    continue;
+                }
+                
+                // Strings
+                if (code[i] === '"') {
+                    let end = i + 1;
+                    while (end < code.length && code[end] !== '"') {
+                        if (code[end] === '\\') end++;
+                        end++;
+                    }
+                    end++;
+                    result.push('<span class="hl-string">' + escapeHtml(code.slice(i, end)) + '</span>');
+                    i = end;
+                    continue;
+                }
+                
+                // Keywords and identifiers
+                if (/[a-zA-Z_]/.test(code[i])) {
+                    let end = i;
+                    while (end < code.length && /[a-zA-Z0-9_]/.test(code[end])) end++;
+                    let word = code.slice(i, end);
+                    let keywords = ['def', 'let', 'if', 'else', 'for', 'while', 'in', 'break', 'continue', 'fn', 'true', 'false', 'range'];
+                    if (keywords.includes(word)) {
+                        result.push('<span class="hl-keyword">' + word + '</span>');
+                    } else if (end < code.length && code[end] === '(') {
+                        result.push('<span class="hl-function">' + word + '</span>');
+                    } else {
+                        result.push(word);
+                    }
+                    i = end;
+                    continue;
+                }
+                
+                // Numbers
+                if (/[0-9]/.test(code[i])) {
+                    let end = i;
+                    while (end < code.length && /[0-9]/.test(code[end])) end++;
+                    result.push('<span class="hl-number">' + code.slice(i, end) + '</span>');
+                    i = end;
+                    continue;
+                }
+                
+                // Operators
+                if (code.slice(i, i+2) === '**') {
+                    result.push('<span class="hl-operator">**</span>');
+                    i += 2;
+                    continue;
+                }
+                if (/[+\-*\/%=<>!]/.test(code[i])) {
+                    result.push('<span class="hl-operator">' + escapeHtml(code[i]) + '</span>');
+                    i++;
+                    continue;
+                }
+                
+                // Default
+                result.push(escapeHtml(code[i]));
+                i++;
+            }
+            
+            block.innerHTML = result.join('');
+        }
+        
+        function escapeHtml(text) {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent(getPage());
+        });
+
+        // Handle navigation
+        window.addEventListener('popstate', () => {
+            loadContent(getPage());
+        });
+    </script>
+</body>
+</html>

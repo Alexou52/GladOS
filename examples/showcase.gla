@@ -1,0 +1,129 @@
+# BOA LANGUAGE SHOWCASE
+# =====================
+
+print("Welcome to Boa!")
+print("")
+
+# Variables
+let x = 42
+let name = "Alice"
+print("x =", x)
+print("name =", name)
+print("")
+
+# Arithmetic
+print("=== Arithmetic ===")
+print("10 + 5 =", 10 + 5)
+print("10 - 5 =", 10 - 5)
+print("10 * 5 =", 10 * 5)
+print("10 / 3 =", 10 / 3)
+print("10 % 3 =", 10 % 3)
+print("")
+
+# Power operator
+print("=== Power ** ===")
+print("2 ** 8 =", 2 ** 8)
+print("2 ** 10 =", 2 ** 10)
+print("3 ** 4 =", 3 ** 4)
+print("")
+
+# Factorial operator
+print("=== Factorial ! ===")
+print("5! =", 5!)
+print("6! =", 6!)
+print("10! =", 10!)
+print("(3+2)! =", (3+2)!)
+print("")
+
+# Comparison
+print("=== Comparison ===")
+print("5 == 5:", 5 == 5)
+print("5 != 3:", 5 != 3)
+print("3 < 5:", 3 < 5)
+print("")
+
+# Functions
+print("=== Functions ===")
+
+def add(a, b):
+    a + b
+
+def square(n):
+    n * n
+
+print("add(3, 4) =", add(3, 4))
+print("square(7) =", square(7))
+print("")
+
+# Recursion
+print("=== Recursion ===")
+
+def factorial(n):
+    if n <= 1: 1
+    else: n * factorial(n - 1)
+
+def fib(n):
+    if n <= 1: n
+    else: fib(n - 1) + fib(n - 2)
+
+print("factorial(5) =", factorial(5))
+print("fib(10) =", fib(10))
+print("")
+
+# Lambdas
+print("=== Lambdas ===")
+let double = fn(x): x * 2
+let triple = fn(x): x * 3
+print("double(21) =", double(21))
+print("triple(14) =", triple(14))
+print("")
+
+# Conditionals
+print("=== Conditionals ===")
+
+def abs(n):
+    if n < 0: -n
+    else: n
+
+def sign(n):
+    if n > 0: "positive"
+    else: if n < 0: "negative"
+    else: "zero"
+
+print("abs(-42) =", abs(-42))
+print("sign(5) =", sign(5))
+print("sign(-5) =", sign(-5))
+print("sign(0) =", sign(0))
+print("")
+
+# For loop
+print("=== For Loop ===")
+for i in range(0, 5):
+    print(i)
+print("")
+
+# While loop
+print("=== While Loop ===")
+let n = 3
+while n > 0: {
+    print(n)
+    n = n - 1
+}
+print("Done!")
+print("")
+
+# Math example
+print("=== Math: C(n,k) ===")
+
+def fact(n):
+    if n <= 1: 1
+    else: n * fact(n - 1)
+
+def comb(n, k):
+    fact(n) / (fact(k) * fact(n - k))
+
+print("C(5,2) =", comb(5, 2))
+print("C(10,3) =", comb(10, 3))
+print("")
+
+print("Showcase complete!")

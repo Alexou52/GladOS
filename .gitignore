@@ -1,0 +1,56 @@
+# Haskell
+dist
+dist-*
+cabal-dev
+*.o
+*.hi
+*.hie
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
+*.eventlog
+.stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
+
+# Binary
+glados
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+.hpc/
+*.tix
+
+# Website - Python virtual environment
+website/venv/
+website/__pycache__/
+website/*.pyc
+website/.pytest_cache/
+
+# Website - Node modules (if needed later)
+website/node_modules/
+website/package-lock.json
+
+# Website - Build artifacts
+website/dist/
+website/build/

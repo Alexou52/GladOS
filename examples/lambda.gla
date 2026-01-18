@@ -1,0 +1,7 @@
+(define x 10)
+(define y 3)
+(define add (lambda (a b) (+ a b)))
+(define del (lambda (a b) (- a b)))
+(add x y)
+(del x y)
+

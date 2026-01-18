@@ -1,0 +1,11 @@
+; Demo program for glados interpreter
+; Simple arithmetic
+(+ 4 3)
+(* (+ 4 3) 6)
+; Condition
+(if (> 10 5) 42 0)
+; Define (currently evaluation just returns value)
+(define foo (* 2 21))
+foo
+; Nested calls
+(+ foo (* 3 4))

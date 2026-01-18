@@ -1,0 +1,43 @@
+# GLaDOS - Loops and Command Line Arguments Demo
+
+# ===== BOUCLE FOR =====
+print("=== FOR LOOP ===")
+print("Comptage de 0 a 4:")
+for i in range(0, 5):
+    print(i)
+
+# ===== BOUCLE WHILE =====
+print("")
+print("=== WHILE LOOP ===")
+let x = 5
+print("Countdown:")
+while x > 0: {
+    print(x)
+    x = x - 1
+}
+print("Liftoff!")
+
+# ===== ARGUMENTS DE LIGNE DE COMMANDE =====
+print("")
+print("=== COMMAND LINE ARGUMENTS ===")
+print("Nombre d'arguments (argc):", argc)
+print("Liste des arguments:")
+for i in range(0, argc):
+    print("  argv[", i, "] =", get(argv, i))
+
+# ===== FONCTIONS UTILITAIRES =====
+print("")
+print("=== UTILITY FUNCTIONS ===")
+print("Longueur de argv:", len(argv))
+
+# ===== FACTORIAL =====
+print("")
+print("=== FACTORIAL ===")
+def factorial(num):
+    if num < 2:
+        1
+    else:
+        num * factorial(num - 1)
+
+print("5! =", factorial(5))
+print("10! =", factorial(10))

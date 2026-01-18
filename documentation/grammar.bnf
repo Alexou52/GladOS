@@ -1,0 +1,86 @@
+{-- 
+-- EPITECH PROJECT, 2025
+-- glados
+-- File description:
+-- grammar.bnf
+--}
+
+<program>           ::= <statement>*
+
+<statement>         ::= <definition>
+                      | <expression>
+
+<definition>        ::= <variable-def>
+                      | <function-def>
+
+<variable-def>      ::= "let" <identifier> "=" <expression>
+
+<function-def>      ::= "def" <identifier> "(" <parameters>? ")" ":" <block>
+
+<parameters>        ::= <identifier> ("," <identifier>)*
+
+<expression>        ::= <if-expr>
+                      | <for-expr>
+                      | <while-expr>
+                      | <lambda-expr>
+                      | <comparison>
+
+<if-expr>           ::= "if" <expression> ":" <block> "else" ":" <block>
+
+<for-expr>          ::= "for" <identifier> "in" "range" "(" <expression> "," <expression> ")" ":" <block>
+
+<while-expr>        ::= "while" <expression> ":" <block>
+
+<lambda-expr>       ::= "fn" "(" <parameters>? ")" ":" <expression>
+
+<comparison>        ::= <additive> (<comparison-op> <additive>)*
+<comparison-op>     ::= "==" | "!=" | "<" | ">" | "<=" | ">="
+
+<additive>          ::= <multiplicative> (<additive-op> <multiplicative>)*
+<additive-op>       ::= "+" | "-"
+
+<multiplicative>    ::= <unary> (<multiplicative-op> <unary>)*
+<multiplicative-op> ::= "*" | "/" | "%"
+
+<unary>             ::= <unary-op>? <call>
+<unary-op>          ::= "-" | "!"
+
+<call>              ::= <primary> <call-suffix>*
+<call-suffix>       ::= "(" <arguments>? ")"
+
+<arguments>         ::= <expression> ("," <expression>)*
+
+<primary>           ::= <integer>
+                      | <boolean>
+                      | <string>
+                      | <identifier>
+                      | "break"
+                      | "continue"
+                      | "(" <expression> ")"
+
+<block>             ::= <NEWLINE> <INDENT> <statement>+ <DEDENT>
+                      | <expression>
+
+<integer>           ::= "-"? <digit>+
+<digit>             ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+<string>            ::= '"' <char>* '"'
+
+<boolean>           ::= "true" | "false"
+
+<identifier>        ::= <letter> (<letter> | <digit> | "_" | "?" | "!")*
+<letter>            ::= "a" ... "z" | "A" ... "Z"
+
+<NEWLINE>           ::= "\n"
+<INDENT>            ::= <increase in indentation level>
+<DEDENT>            ::= <decrease in indentation level>
+<comment>           ::= "#" <any-char>* <NEWLINE>
+
+{-- Built-in Variables --}
+# argv  - List of command-line arguments (like Python's sys.argv)
+#         argv[0] is the script filename
+# argc  - Number of arguments (length of argv)
+
+{-- Built-in Functions --}
+# len(list)      - Returns the length of a list or string
+# get(list, idx) - Returns the element at index idx from list or string

@@ -1,0 +1,162 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Haskell
+      uses: haskell/actions/setup@v2
+      with:
+        ghc-version: '9.4.8'
+        enable-stack: true
+        stack-version: 'latest'
+    
+    - name: Cache Stack dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.stack
+          .stack-work
+        key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-
+    
+    - name: Build project
+      run: make
+    
+    - name: Run tests with coverage
+      run: make test_run
+    
+    - name: Upload coverage to artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: |
+          .stack-work/install/**/hpc/**/*.html
+          .stack-work/install/**/hpc/**/*.css
+        if-no-files-found: warn
+    
+    - name: Check binary exists
+      run: |
+        if [ ! -f ./glados ]; then
+          echo "Error: Binary 'glados' not found!"
+          exit 1
+        fi
+        echo "Binary found: ./glados"
+        chmod +x ./glados
+        echo "Testing binary with sample input..."
+        echo "(+ 2 3)" | ./glados 2>&1 || echo "Note: Binary may require file input"
+
+  release:
+    name: Create Release Build
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Haskell
+      uses: haskell/actions/setup@v2
+      with:
+        ghc-version: '9.4.8'
+        enable-stack: true
+        stack-version: 'latest'
+    
+    - name: Cache Stack dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.stack
+          .stack-work
+        key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-
+    
+    - name: Build release binary
+      run: make
+    
+    - name: Create release artifact
+      run: |
+        mkdir -p release
+        cp glados release/
+        tar -czf glados-release.tar.gz release/
+    
+    - name: Upload release artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: glados-release
+        path: glados-release.tar.gz
+        retention-days: 30
+
+    - name: Get version from date
+      id: version
+      run: echo "VERSION=$(date +'%Y.%m.%d')-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: GLaDOS Release v${{ steps.version.outputs.VERSION }}
+        body: |
+          ## GLaDOS/Boa Release
+          
+          **Commit:** ${{ github.sha }}
+          **Date:** ${{ github.event.head_commit.timestamp }}
+          
+          ### Changes
+          ${{ github.event.head_commit.message }}
+          
+          ### Download
+          - `glados-release.tar.gz` - Linux binary
+        files: glados-release.tar.gz
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lint:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Haskell
+      uses: haskell/actions/setup@v2
+      with:
+        ghc-version: '9.4.8'
+        enable-stack: true
+        stack-version: 'latest'
+    
+    - name: Cache Stack dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.stack
+          .stack-work
+        key: ${{ runner.os }}-stack-lint-${{ hashFiles('stack.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-lint-
+          ${{ runner.os }}-stack-
+    
+    - name: Install HLint
+      run: |
+        stack install hlint
+    
+    - name: Run linter
+      run: |
+        ~/.local/bin/hlint src/ test/ || true

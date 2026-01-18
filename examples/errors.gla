@@ -1,0 +1,35 @@
+# BOA ERROR EXAMPLES
+# ==================
+# Uncomment ONE error at a time to see the message
+
+print("Boa Error Examples")
+print("==================")
+print("")
+
+# -------------------------------------------------
+# ERROR 1: Undefined Variable
+# -------------------------------------------------
+# Uncomment the line below:
+# print(undefinedVar)
+# Expected: error: undefined variable 'undefinedVar'
+
+# -------------------------------------------------
+# ERROR 2: Division by Zero
+# -------------------------------------------------
+# Uncomment the lines below:
+# let a = 10
+# let b = 0
+# print(a / b)
+# Expected: division by zero
+
+# -------------------------------------------------
+# Working code for comparison
+# -------------------------------------------------
+let x = 42
+let y = 8
+print("x + y =", x + y)
+print("5! =", 5!)
+print("2 ** 10 =", 2 ** 10)
+
+print("")
+print("Edit this file to test errors!")

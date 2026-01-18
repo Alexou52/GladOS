@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLaDOS Playground - Try the Language</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-primary: #58a6ff;
+            --accent-secondary: #3fb950;
+            --accent-orange: #d29922;
+            --accent-gradient: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
+            --boa-gradient: linear-gradient(135deg, #d29922 0%, #3fb950 50%, #58a6ff 100%);
+            --success: #3fb950;
+            --error: #f85149;
+            --warning: #d29922;
+            --border: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-logo .boa-icon {
+            font-size: 1.8rem;
+        }
+
+        .nav-logo .logo-text {
+            background: var(--boa-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            height: calc(100vh - 70px);
+            position: sticky;
+            top: 70px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Sandbox Card */
+        .sandbox-card {
+            margin: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-secondary) 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .sandbox-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(63, 185, 80, 0.3);
+        }
+
+        .sandbox-card .sandbox-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sandbox-card .sandbox-desc {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Example Categories */
+        .example-category {
+            padding: 0.75rem 1rem;
+        }
+
+        .category-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .example-card {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+        }
+
+        .example-card:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .example-card.active {
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        .example-card.error-example:hover {
+            background: rgba(248, 81, 73, 0.1);
+        }
+
+        .example-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .example-description {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tag.new {
+            background: var(--accent-secondary);
+            color: var(--bg-primary);
+        }
+
+        .tag.error {
+            background: var(--error);
+            color: white;
+        }
+
+        /* Editor Area */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--boa-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .file-name {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+        }
+
+        .file-ext {
+            color: var(--accent-secondary);
+        }
+
+        .run-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent-secondary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .run-button:hover:not(:disabled) {
+            background: #4ac35a;
+            transform: translateY(-1px);
+        }
+
+        .run-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Code Container */
+        .code-container {
+            flex: 1;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            min-height: 0;
+        }
+
+        .editor-pane, .output-pane {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .pane-header {
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 1rem;
+            resize: none;
+            outline: none;
+        }
+
+        .code-editor::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .autocomplete-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: transparent;
+            pointer-events: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        .autocomplete-suggestion {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .output-content {
+            flex: 1;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            background: var(--bg-primary);
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
+        .output-placeholder {
+            color: var(--text-secondary);
+        }
+
+        .output-success {
+            color: var(--text-primary);
+        }
+
+        .output-error {
+            color: var(--error);
+        }
+
+        /* Syntax Reference */
+        .syntax-ref {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .ref-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ref-title i {
+            color: var(--accent-orange);
+        }
+
+        .ref-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .ref-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .ref-item {
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 0.6rem 0.75rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+
+        .ref-item code {
+            color: var(--accent-primary);
+        }
+
+        .ref-item .desc {
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .ref-item.new-feature {
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .syntax-ref {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-dragon boa-icon"></i>
+                <span class="logo-text">GLaDOS</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="docs.html" class="nav-link">Documentation</a></li>
+                <li><a href="playground.html" class="nav-link active">Playground</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Sidebar with Examples -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-dragon"></i>
+                    Boa Examples
+                </h2>
+                <p class="sidebar-subtitle">Click an example or use the sandbox</p>
+            </div>
+            
+            <!-- Sandbox Card -->
+            <div class="sandbox-card" onclick="loadSandbox()">
+                <div class="sandbox-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Free Sandbox
+                </div>
+                <div class="sandbox-desc">Write your own code from scratch!</div>
+            </div>
+            
+            <div class="examples-list" id="examples-list">
+                <!-- Examples loaded dynamically -->
+            </div>
+        </aside>
+
+        <!-- Main Editor -->
+        <main class="editor-area">
+            <div class="editor-header">
+                <div class="file-info">
+                    <div class="file-icon">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <span class="file-name">playground<span class="file-ext" id="file-ext">.gla</span></span>
+                </div>
+                <button class="run-button" id="run-btn" onclick="runCode()">
+                    <i class="fas fa-play"></i>
+                    Run Code
+                </button>
+            </div>
+            <div class="code-container">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <i class="fas fa-code"></i>
+                        Code Editor
+                        <span style="margin-left: auto; font-weight: normal; opacity: 0.7;">Ctrl+Enter to run | Tab for autocomplete</span>
+                    </div>
+                    <div class="editor-wrapper">
+                        <div class="autocomplete-preview" id="autocomplete-preview"></div>
+                        <textarea class="code-editor" id="code-editor" placeholder="Write your GLaDOS code here..." spellcheck="false"># Welcome to GLaDOS!
+# A functional language with dual syntax (LISP & Python-like)
+
+def factorial(n):
+    if n <= 1: 1
+    else: n * factorial(n - 1)
+
+# Try the new ** (power) and ! (factorial) operators
+print("2 ** 10 =", 2 ** 10)
+print("5! =", 5!)
+print("factorial(6) =", factorial(6))</textarea>
+                    </div>
+                </div>
+                <div class="output-pane">
+                    <div class="pane-header">
+                        <i class="fas fa-terminal"></i>
+                        Output
+                    </div>
+                    <div class="output-content" id="output">
+                        <span class="output-placeholder">Click "Run Code" to see the output... (Ctrl+Enter)</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Syntax Reference -->
+        <aside class="syntax-ref" id="syntax-ref">
+            <h3 class="ref-title"><i class="fas fa-book"></i> GLaDOS Reference</h3>
+            
+            <div class="ref-section">
+                <div class="ref-section-title">Variables</div>
+                <div class="ref-item">
+                    <code>let x = 42</code>
+                    <div class="desc">Define a variable</div>
+                </div>
+                <div class="ref-item">
+                    <code>x = x + 1</code>
+                    <div class="desc">Reassign a variable</div>
+                </div>
+            </div>
+            
+            <div class="ref-section">
+                <div class="ref-section-title">Functions</div>
+                <div class="ref-item">
+                    <code>def add(a, b): a + b</code>
+                    <div class="desc">Define a function</div>
+                </div>
+                <div class="ref-item">
+                    <code>fn(x): x * 2</code>
+                    <div class="desc">Lambda expression</div>
+                </div>
+            </div>
+            
+            <div class="ref-section">
+                <div class="ref-section-title">Operators</div>
+                <div class="ref-item"><code>+ - * / %</code><div class="desc">Arithmetic</div></div>
+                <div class="ref-item new-feature"><code>**</code><div class="desc">Power (2 ** 10 = 1024)</div></div>
+                <div class="ref-item new-feature"><code>!</code><div class="desc">Factorial (5! = 120)</div></div>
+                <div class="ref-item"><code>== != &lt; &gt; &lt;= &gt;=</code><div class="desc">Comparison</div></div>
+            </div>
+            
+            <div class="ref-section">
+                <div class="ref-section-title">Control Flow</div>
+                <div class="ref-item">
+                    <code>if cond: a else: b</code>
+                    <div class="desc">Conditional</div>
+                </div>
+                <div class="ref-item">
+                    <code>for i in range(0, 10):</code>
+                    <div class="desc">For loop</div>
+                </div>
+                <div class="ref-item">
+                    <code>while cond: ...</code>
+                    <div class="desc">While loop</div>
+                </div>
+            </div>
+            
+            <div class="ref-section">
+                <div class="ref-section-title">Built-ins</div>
+                <div class="ref-item"><code>print(x, y, ...)</code><div class="desc">Print values</div></div>
+                <div class="ref-item"><code>len(list)</code><div class="desc">Length</div></div>
+                <div class="ref-item"><code>get(list, i)</code><div class="desc">Get element</div></div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001';
+        let currentSuggestion = '';
+
+        // Keywords for autocomplete
+        const keywords = [
+            'let', 'def', 'fn',
+            'if', 'else',
+            'for', 'while', 'in', 'range',
+            'break', 'continue',
+            'true', 'false',
+            'print', 'len', 'get', 'append', 'set', 'concat'
+        ];
+
+        const examples = [
+            // Showcase features
+            {
+                category: "Features Showcase",
+                items: [
+                    {
+                        name: "Complete Demo",
+                        description: "All GLaDOS features in one file",
+                        tag: "new",
+                        code: `# GLaDOS Language - Complete Feature Demo
+# ==========================================
+
+# ===== VARIABLES =====
+let message = "Hello, GLaDOS!"
+let x = 42
+let pi = 3
+
+print("=== Variables ===")
+print(message)
+print("x =", x)
+
+# ===== OPERATORS =====
+print("")
+print("=== Arithmetic Operators ===")
+print("10 + 5 =", 10 + 5)
+print("10 - 5 =", 10 - 5)
+print("10 * 5 =", 10 * 5)
+print("10 / 3 =", 10 / 3)
+print("10 % 3 =", 10 % 3)
+
+# NEW: Power operator **
+print("")
+print("=== Power Operator ** ===")
+print("2 ** 8 =", 2 ** 8)
+print("3 ** 4 =", 3 ** 4)
+print("10 ** 0 =", 10 ** 0)
+
+# NEW: Factorial operator !
+print("")
+print("=== Factorial Operator ! ===")
+print("5! =", 5!)
+print("6! =", 6!)
+
+# ===== COMPARISON =====
+print("")
+print("=== Comparison ===")
+print("5 == 5:", 5 == 5)
+print("5 != 3:", 5 != 3)
+print("5 < 10:", 5 < 10)
+print("5 >= 5:", 5 >= 5)
+
+# ===== FUNCTIONS =====
+print("")
+print("=== Functions ===")
+
+def greet(name):
+    print("Hello,", name)
+
+def square(n):
+    n * n
+
+def factorial(n):
+    if n <= 1: 1
+    else: n * factorial(n - 1)
+
+greet("World")
+print("square(7) =", square(7))
+print("factorial(5) =", factorial(5))
+
+# ===== LAMBDAS =====
+print("")
+print("=== Lambda Functions ===")
+let double = fn(x): x * 2
+let add = fn(a, b): a + b
+print("double(21) =", double(21))
+print("add(10, 32) =", add(10, 32))
+
+# ===== CONDITIONALS =====
+print("")
+print("=== Conditionals ===")
+
+def sign(n):
+    if n > 0: "positive"
+    else: if n < 0: "negative"
+    else: "zero"
+
+print("sign(42) =", sign(42))
+print("sign(-5) =", sign(-5))
+print("sign(0) =", sign(0))
+
+# ===== FOR LOOPS =====
+print("")
+print("=== For Loops ===")
+print("Counting 0 to 4:")
+for i in range(0, 5):
+    print(i)
+
+# ===== WHILE LOOPS =====
+print("")
+print("=== While Loops ===")
+let countdown = 3
+while countdown > 0: {
+    print("T-", countdown)
+    countdown = countdown - 1
+}
+print("Liftoff!")
+
+# ===== LISTS =====
+print("")
+print("=== Lists ===")
+let numbers = [1, 2, 3, 4, 5]
+print("numbers =", numbers)
+print("len(numbers) =", len(numbers))
+print("get(numbers, 2) =", get(numbers, 2))
+
+print("")
+print("=== Demo Complete! ===")
+print("Thanks for trying GLaDOS!")`
+                    }
+                ]
+            },
+            // Basic examples
+            {
+                category: "Basics",
+                items: [
+                    {
+                        name: "Hello World",
+                        description: "Your first GLaDOS program",
+                        code: `# Hello World in GLaDOS
+print("Hello, World!")
+print("Welcome to the GLaDOS programming language!")`
+                    },
+                    {
+                        name: "Variables",
+                        description: "Defining and using variables",
+                        code: `# Variables in GLaDOS
+let name = "Alice"
+let age = 25
+let pi = 3
+
+print("Name:", name)
+print("Age:", age)
+print("Pi:", pi)
+
+# Reassignment
+age = age + 1
+print("Next year:", age)`
+                    },
+                    {
+                        name: "Arithmetic",
+                        description: "Basic math operations",
+                        code: `# Arithmetic in GLaDOS
+let a = 15
+let b = 4
+
+print("a =", a)
+print("b =", b)
+print("")
+print("a + b =", a + b)
+print("a - b =", a - b)
+print("a * b =", a * b)
+print("a / b =", a / b)
+print("a % b =", a % b)`
+                    }
+                ]
+            },
+            // New operators
+            {
+                category: "New Operators",
+                items: [
+                    {
+                        name: "Power Operator",
+                        description: "The ** operator for exponentiation",
+                        tag: "new",
+                        code: `# Power Operator ** (NEW!)
+# Right-associative: 2 ** 3 ** 2 = 2 ** 9 = 512
+
+print("Powers of 2:")
+print("2 ** 1 =", 2 ** 1)
+print("2 ** 2 =", 2 ** 2)
+print("2 ** 3 =", 2 ** 3)
+print("2 ** 8 =", 2 ** 8)
+print("2 ** 10 =", 2 ** 10)
+
+print("")
+print("Other examples:")
+print("3 ** 4 =", 3 ** 4)
+print("10 ** 3 =", 10 ** 3)
+print("5 ** 0 =", 5 ** 0)`
+                    },
+                    {
+                        name: "Factorial Operator",
+                        description: "The ! postfix operator",
+                        tag: "new",
+                        code: `# Factorial Operator ! (NEW!)
+# Works as postfix on numbers
+
+print("Factorials:")
+print("1! =", 1!)
+print("2! =", 2!)
+print("3! =", 3!)
+print("4! =", 4!)
+print("5! =", 5!)
+print("6! =", 6!)
+print("7! =", 7!)
+
+print("")
+print("Combinations:")
+print("2 ** 3! =", 2 ** 3!)  # 2^6 = 64`
+                    }
+                ]
+            },
+            // Functions
+            {
+                category: "Functions",
+                items: [
+                    {
+                        name: "Basic Functions",
+                        description: "Defining and calling functions",
+                        code: `# Functions in GLaDOS
+def greet(name):
+    print("Hello,", name, "!")
+
+def add(a, b):
+    a + b
+
+def multiply(x, y):
+    x * y
+
+greet("World")
+greet("Boa")
+
+print("5 + 3 =", add(5, 3))
+print("4 * 7 =", multiply(4, 7))`
+                    },
+                    {
+                        name: "Recursion",
+                        description: "Recursive functions",
+                        code: `# Recursive Functions
+def factorial(n):
+    if n <= 1: 1
+    else: n * factorial(n - 1)
+
+def fibonacci(n):
+    if n <= 1: n
+    else: fibonacci(n - 1) + fibonacci(n - 2)
+
+print("Factorials:")
+for i in range(1, 8):
+    print(i, "! =", factorial(i))
+
+print("")
+print("Fibonacci sequence:")
+for i in range(0, 10):
+    print("fib(", i, ") =", fibonacci(i))`
+                    },
+                    {
+                        name: "Lambda Functions",
+                        description: "Anonymous functions with fn",
+                        code: `# Lambda Functions
+let double = fn(x): x * 2
+let square = fn(x): x * x
+let add = fn(a, b): a + b
+
+print("double(5) =", double(5))
+print("square(7) =", square(7))
+print("add(3, 4) =", add(3, 4))
+
+# Combining lambdas
+let compose = fn(x): double(square(x))
+print("double(square(3)) =", compose(3))`
+                    }
+                ]
+            },
+            // Control Flow
+            {
+                category: "Control Flow",
+                items: [
+                    {
+                        name: "Conditionals",
+                        description: "If-else expressions",
+                        code: `# Conditionals in Boa
+def max(a, b):
+    if a > b: a
+    else: b
+
+def abs(n):
+    if n < 0: 0 - n
+    else: n
+
+def sign(n):
+    if n > 0: "positive"
+    else: if n < 0: "negative"
+    else: "zero"
+
+print("max(5, 3) =", max(5, 3))
+print("max(2, 8) =", max(2, 8))
+print("abs(-42) =", abs(-42))
+print("sign(10) =", sign(10))
+print("sign(-5) =", sign(-5))
+print("sign(0) =", sign(0))`
+                    },
+                    {
+                        name: "For Loops",
+                        description: "Iterating with for and range",
+                        code: `# For Loops
+print("Counting 0 to 5:")
+for i in range(0, 6):
+    print(i)
+
+print("")
+print("Squares:")
+for n in range(1, 6):
+    print(n, "squared =", n * n)
+
+print("")
+print("Sum 1 to 10:")
+let sum = 0
+for i in range(1, 11):
+    sum = sum + i
+print("Total:", sum)`
+                    },
+                    {
+                        name: "While Loops",
+                        description: "Conditional loops",
+                        code: `# While Loops
+print("Countdown:")
+let n = 5
+while n > 0: {
+    print(n)
+    n = n - 1
+}
+print("Blastoff!")
+
+print("")
+print("Powers of 2 under 100:")
+let power = 1
+while power < 100: {
+    print(power)
+    power = power * 2
+}`
+                    }
+                ]
+            },
+            // Errors
+            {
+                category: "Error Examples",
+                items: [
+                    {
+                        name: "Undefined Variable",
+                        description: "What happens with typos",
+                        tag: "error",
+                        code: `# Error: Undefined Variable
+let x = 42
+print(y)  # Error: y is not defined!`
+                    },
+                    {
+                        name: "Division by Zero",
+                        description: "Runtime error example",
+                        tag: "error",
+                        code: `# Error: Division by Zero
+let a = 10
+let b = 0
+print(a / b)  # Error: division by zero!`
+                    },
+                    {
+                        name: "Syntax Error",
+                        description: "Missing else branch",
+                        tag: "error",
+                        code: `# Error: Syntax Error
+# In Boa, if must have else
+def test(x):
+    if x > 0:
+        "positive"
+    # Missing else!`
+                    }
+                ]
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderExamples();
+            setupAutocomplete();
+            setupKeyboardShortcuts();
+        });
+
+        function setupKeyboardShortcuts() {
+            document.getElementById('code-editor').addEventListener('keydown', (e) => {
+                // Ctrl+Enter to run
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    runCode();
+                }
+                // Tab for autocomplete or indent
+                if (e.key === 'Tab') {
+                    if (currentSuggestion) {
+                        e.preventDefault();
+                        acceptSuggestion();
+                    } else {
+                        e.preventDefault();
+                        const editor = e.target;
+                        const start = editor.selectionStart;
+                        const end = editor.selectionEnd;
+                        editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
+                        editor.selectionStart = editor.selectionEnd = start + 4;
+                    }
+                }
+            });
+        }
+
+        function setupAutocomplete() {
+            const editor = document.getElementById('code-editor');
+            editor.addEventListener('input', updateAutocomplete);
+            editor.addEventListener('scroll', syncScroll);
+        }
+
+        function updateAutocomplete() {
+            const editor = document.getElementById('code-editor');
+            const preview = document.getElementById('autocomplete-preview');
+            const text = editor.value;
+            const cursorPos = editor.selectionStart;
+
+            const beforeCursor = text.substring(0, cursorPos);
+            const wordMatch = beforeCursor.match(/[\w]+$/);
+            
+            if (!wordMatch) {
+                preview.textContent = '';
+                currentSuggestion = '';
+                return;
+            }
+
+            const currentWord = wordMatch[0];
+            const match = keywords.find(kw => 
+                kw.startsWith(currentWord) && kw !== currentWord
+            );
+
+            if (match) {
+                currentSuggestion = match.substring(currentWord.length);
+                const beforeWord = text.substring(0, cursorPos - currentWord.length);
+                const afterCursor = text.substring(cursorPos);
+                
+                preview.innerHTML = 
+                    escapeHtml(beforeWord) + 
+                    escapeHtml(currentWord) + 
+                    '<span class="autocomplete-suggestion">' + escapeHtml(currentSuggestion) + '</span>' +
+                    escapeHtml(afterCursor);
+            } else {
+                preview.textContent = '';
+                currentSuggestion = '';
+            }
+
+            syncScroll();
+        }
+
+        function acceptSuggestion() {
+            if (!currentSuggestion) return;
+            
+            const editor = document.getElementById('code-editor');
+            const cursorPos = editor.selectionStart;
+            const text = editor.value;
+            
+            const newText = text.substring(0, cursorPos) + currentSuggestion + text.substring(cursorPos);
+            const newCursorPos = cursorPos + currentSuggestion.length;
+            
+            editor.value = newText;
+            editor.setSelectionRange(newCursorPos, newCursorPos);
+            
+            currentSuggestion = '';
+            document.getElementById('autocomplete-preview').textContent = '';
+            editor.focus();
+        }
+
+        function syncScroll() {
+            const editor = document.getElementById('code-editor');
+            const preview = document.getElementById('autocomplete-preview');
+            preview.scrollTop = editor.scrollTop;
+            preview.scrollLeft = editor.scrollLeft;
+        }
+
+        function renderExamples() {
+            const list = document.getElementById('examples-list');
+            let html = '';
+            let globalIndex = 0;
+            
+            examples.forEach(category => {
+                html += `<div class="example-category">
+                    <div class="category-title">${category.category}</div>`;
+                
+                category.items.forEach(ex => {
+                    const tagHtml = ex.tag ? `<span class="tag ${ex.tag}">${ex.tag.toUpperCase()}</span>` : '';
+                    const errorClass = ex.tag === 'error' ? 'error-example' : '';
+                    html += `
+                        <div class="example-card ${errorClass}" onclick="loadExample(${globalIndex})">
+                            <div class="example-name">${ex.name} ${tagHtml}</div>
+                            <div class="example-description">${ex.description}</div>
+                        </div>`;
+                    globalIndex++;
+                });
+                
+                html += '</div>';
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function loadExample(index) {
+            let currentIndex = 0;
+            for (const category of examples) {
+                for (const ex of category.items) {
+                    if (currentIndex === index) {
+                        document.getElementById('code-editor').value = ex.code;
+                        document.querySelectorAll('.example-card').forEach((card, i) => {
+                            card.classList.toggle('active', i === index);
+                        });
+                        document.getElementById('output').innerHTML = '<span class="output-placeholder">Click "Run Code" to see the output...</span>';
+                        return;
+                    }
+                    currentIndex++;
+                }
+            }
+        }
+
+        function loadSandbox() {
+            document.getElementById('code-editor').value = `# Free Sandbox - Write your own code!
+# Try out any Boa feature you want
+
+# Example: Calculate something
+let x = 10
+let y = 20
+print("x + y =", x + y)
+
+# Try using the new operators:
+# print("2 ** 10 =", 2 ** 10)
+# print("5! =", 5!)
+`;
+            document.querySelectorAll('.example-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById('output').innerHTML = '<span class="output-placeholder">Write your code and click "Run Code"!</span>';
+        }
+
+        async function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const output = document.getElementById('output');
+            const btn = document.getElementById('run-btn');
+
+            if (!code.trim()) {
+                output.innerHTML = '<span class="output-error">No code to run</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+            output.innerHTML = '<span class="output-placeholder">Executing...</span>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/execute-new`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    output.innerHTML = `<span class="output-success">${escapeHtml(result.output)}</span>`;
+                } else {
+                    output.innerHTML = `<span class="output-error">${escapeHtml(result.error)}</span>`;
+                }
+            } catch (err) {
+                output.innerHTML = `<span class="output-error">Connection error: ${err.message}
+
+Make sure the backend is running:
+cd website && python3 backend.py</span>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-play"></i> Run Code';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
